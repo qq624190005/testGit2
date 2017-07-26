@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql隔离 -->
+<mapper namespace="com.bwie.dao.StudentMapper">
+	
+		<insert id="add" parameterType="student">
+			insert into student values(null,#{name},#{age},#{birthday},#{gender},#{classes.cid});
+		</insert>
+		
+		<resultMap type="student" id="ss">
+			<id column="id" property="id"/>
+			<result column="name" property="name"/>
+			<result column="age" property="age"/>
+			<result column="birthday" property="birthday"/>
+			<result column="gender" property="gender"/>
+			<association property="classes" javaType="classes">
+				<id column="cid" property="cid"/>
+				<id column="cname" property="cname"/>
+			</association>
+		</resultMap>
+		<select id="students" parameterType="string" resultMap="ss">
+			SELECT s.*,c.* FROM student s,classes c where s.cid=c.cid
+			<if test="name!=null and name!=''">
+				and s.name like '%${name}%';
+			</if>
+		</select>
+		
+		<delete id="delete" parameterType="int">
+			delete from student where id=#{id};
+		</delete>
+		
+		<select id="getById" parameterType="int" resultType="student">
+			SELECT s.*,c.* FROM student s,classes c where s.cid=c.cid and s.id=#{id}
+		</select>
+		
+		<update id="update" parameterType="student">
+			update student set name=#{name},age=#{age},birthday=#{birthday},gender=#{gender},
+			cid=#{classes.cid} where id=#{id}
+		</update>
+		
+		<select id="classes" resultType="classes">
+			SELECT * from classes;
+		</select>
+</mapper>
